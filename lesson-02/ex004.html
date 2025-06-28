@@ -3,19 +3,456 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="description" content="Interactive JavaScript application demonstrating string methods and DOM manipulation">
+    <title>JavaScript String Analysis Tool</title>
     <style>
+        /* Modern CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font: normal 20pt Arial;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .description {
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .action-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            font-weight: 600;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .action-button.secondary {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+
+        .action-button.secondary:hover {
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+        }
+
+        .results-container {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .analysis-item {
+            margin: 1rem 0;
+            padding: 0.8rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            border-left: 3px solid #4ecdc4;
+        }
+
+        .method-demo {
+            font-family: 'Courier New', monospace;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            color: #a8e6cf;
+        }
+
+        .highlight {
+            color: #ffd93d;
+            font-weight: bold;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            background-color: rgba(255, 107, 107, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>JavaScript String Analyzer</h1>
+        
+        <p class="description">
+            This application demonstrates advanced JavaScript string methods and DOM manipulation techniques.
+            Enter your name to see comprehensive string analysis and transformations.
+        </p>
+        
+        <div class="controls">
+            <button class="action-button" onclick="performStringAnalysis()">
+                Analyze String
+            </button>
+            
+            <button class="action-button secondary" onclick="demonstrateStringMethods()">
+                Show Method Examples
+            </button>
+            
+            <button class="action-button secondary" onclick="clearResults()">
+                Clear Results
+            </button>
+        </div>
+        
+        <div id="results-display" style="display: none;">
+            <!-- Analysis results will be dynamically inserted here -->
+        </div>
+    </div>
+
     <script>
-        var nome = window.prompt('Qual é seu nome?')
-        document.write('Olá <strong>${nome}</strong>! Seu nome tem ${nome.length} letras.</br>')
-        document.writeln(´Seu nome em maiúsculas é ${nome.toUpperCase()}<br/>´)
-        document.write(´Seu nome em minúsculas é ${nome.toLowerCase()}´  )
+        /**
+         * Main function to perform comprehensive string analysis
+         * Demonstrates string methods, template literals, and DOM manipulation
+         */
+        function performStringAnalysis() {
+            try {
+                // Get user input with validation
+                const userName = getUserInput();
+                if (!userName) return;
+                
+                // Perform comprehensive string analysis
+                const analysisData = analyzeString(userName);
+                
+                // Display results using modern DOM manipulation
+                displayAnalysisResults(analysisData);
+                
+                // Log detailed information to console for learning purposes
+                logStringAnalysisDetails(analysisData);
+                
+            } catch (error) {
+                console.error('Error during string analysis:', error);
+                displayErrorMessage('An error occurred during string analysis. Please try again.');
+            }
+        }
+
+        /**
+         * Gets and validates user input
+         * @returns {string|null} - Validated user name or null if cancelled/invalid
+         */
+        function getUserInput() {
+            let userName = window.prompt('Please enter your name for analysis:');
+            
+            // Handle user cancellation
+            if (userName === null) {
+                return null;
+            }
+            
+            // Trim whitespace and validate
+            userName = userName.trim();
+            
+            if (userName === '') {
+                window.alert('Please enter a valid name (cannot be empty).');
+                return null;
+            }
+            
+            if (userName.length > 50) {
+                window.alert('Name is too long. Please enter a name with 50 characters or less.');
+                return null;
+            }
+            
+            return userName;
+        }
+
+        /**
+         * Performs comprehensive string analysis
+         * @param {string} inputString - The string to analyze
+         * @returns {Object} - Object containing all analysis data
+         */
+        function analyzeString(inputString) {
+            const analysis = {
+                original: inputString,
+                length: inputString.length,
+                uppercase: inputString.toUpperCase(),
+                lowercase: inputString.toLowerCase(),
+                trimmed: inputString.trim(),
+                firstChar: inputString.charAt(0),
+                lastChar: inputString.charAt(inputString.length - 1),
+                reversed: inputString.split('').reverse().join(''),
+                wordCount: inputString.trim().split(/\s+/).length,
+                characterFrequency: getCharacterFrequency(inputString),
+                containsSpaces: inputString.includes(' '),
+                startsWithVowel: /^[aeiouAEIOU]/.test(inputString),
+                palindromeCheck: isPalindrome(inputString),
+                capitalizedWords: capitalizeWords(inputString)
+            };
+            
+            return analysis;
+        }
+
+        /**
+         * Calculates character frequency in a string
+         * @param {string} str - Input string
+         * @returns {Object} - Character frequency map
+         */
+        function getCharacterFrequency(str) {
+            const frequency = {};
+            for (const char of str.toLowerCase()) {
+                if (char !== ' ') {
+                    frequency[char] = (frequency[char] || 0) + 1;
+                }
+            }
+            return frequency;
+        }
+
+        /**
+         * Checks if a string is a palindrome
+         * @param {string} str - Input string
+         * @returns {boolean} - True if palindrome, false otherwise
+         */
+        function isPalindrome(str) {
+            const cleaned = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+            return cleaned === cleaned.split('').reverse().join('');
+        }
+
+        /**
+         * Capitalizes the first letter of each word
+         * @param {string} str - Input string
+         * @returns {string} - String with capitalized words
+         */
+        function capitalizeWords(str) {
+            return str.replace(/\b\w/g, char => char.toUpperCase());
+        }
+
+        /**
+         * Displays comprehensive analysis results in the DOM
+         * @param {Object} data - Analysis data object
+         */
+        function displayAnalysisResults(data) {
+            const resultsContainer = document.getElementById('results-display');
+            
+            // Create HTML content using template literals
+            const resultsHTML = `
+                <div class="results-container">
+                    <h2>String Analysis Results</h2>
+                    
+                    <div class="analysis-item">
+                        <strong>Original Input:</strong>
+                        <div class="method-demo">"${data.original}"</div>
+                    </div>
+                    
+                    <div class="analysis-item">
+                        <strong>Basic Properties:</strong>
+                        <div class="method-demo">
+                            Length: <span class="highlight">${data.length}</span> characters<br>
+                            Word Count: <span class="highlight">${data.wordCount}</span> words<br>
+                            Contains Spaces: <span class="highlight">${data.containsSpaces ? 'Yes' : 'No'}</span><br>
+                            Starts with Vowel: <span class="highlight">${data.startsWithVowel ? 'Yes' : 'No'}</span><br>
+                            Is Palindrome: <span class="highlight">${data.palindromeCheck ? 'Yes' : 'No'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-item">
+                        <strong>String Transformations:</strong>
+                        <div class="method-demo">
+                            toUpperCase(): <span class="highlight">"${data.uppercase}"</span><br>
+                            toLowerCase(): <span class="highlight">"${data.lowercase}"</span><br>
+                            Capitalized Words: <span class="highlight">"${data.capitalizedWords}"</span><br>
+                            Reversed: <span class="highlight">"${data.reversed}"</span>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-item">
+                        <strong>Character Analysis:</strong>
+                        <div class="method-demo">
+                            First Character: <span class="highlight">"${data.firstChar}"</span><br>
+                            Last Character: <span class="highlight">"${data.lastChar}"</span><br>
+                            Character Frequency: <span class="highlight">${JSON.stringify(data.characterFrequency)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsContainer.innerHTML = resultsHTML;
+            resultsContainer.style.display = 'block';
+            
+            // Smooth scroll to results
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        /**
+         * Demonstrates various string methods with examples
+         */
+        function demonstrateStringMethods() {
+            const resultsContainer = document.getElementById('results-display');
+            
+            const demonstrationHTML = `
+                <div class="results-container">
+                    <h2>JavaScript String Methods Reference</h2>
+                    
+                    <div class="analysis-item">
+                        <strong>Length and Character Access:</strong>
+                        <div class="method-demo">
+                            str.length // Returns string length<br>
+                            str.charAt(index) // Character at specific position<br>
+                            str[index] // Alternative character access
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-item">
+                        <strong>Case Conversion:</strong>
+                        <div class="method-demo">
+                            str.toUpperCase() // Converts to uppercase<br>
+                            str.toLowerCase() // Converts to lowercase<br>
+                            str.toLocaleUpperCase() // Locale-specific uppercase
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-item">
+                        <strong>Search and Test:</strong>
+                        <div class="method-demo">
+                            str.includes(substr) // Check if contains substring<br>
+                            str.indexOf(substr) // Find first occurrence index<br>
+                            str.startsWith(substr) // Check if starts with<br>
+                            str.endsWith(substr) // Check if ends with
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-item">
+                        <strong>Manipulation:</strong>
+                        <div class="method-demo">
+                            str.trim() // Remove whitespace from both ends<br>
+                            str.replace(old, new) // Replace substring<br>
+                            str.split(separator) // Split into array<br>
+                            str.slice(start, end) // Extract portion
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsContainer.innerHTML = demonstrationHTML;
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        /**
+         * Displays error message to the user
+         * @param {string} message - Error message to display
+         */
+        function displayErrorMessage(message) {
+            const resultsContainer = document.getElementById('results-display');
+            resultsContainer.innerHTML = `
+                <div class="error-message">
+                    <strong>Error:</strong> ${message}
+                </div>
+            `;
+            resultsContainer.style.display = 'block';
+        }
+
+        /**
+         * Clears the results display
+         */
+        function clearResults() {
+            const resultsContainer = document.getElementById('results-display');
+            resultsContainer.style.display = 'none';
+            resultsContainer.innerHTML = '';
+        }
+
+        /**
+         * Logs detailed string analysis information to console
+         * @param {Object} data - Analysis data object
+         */
+        function logStringAnalysisDetails(data) {
+            console.group('🔍 String Analysis Details');
+            console.log('Original String:', data.original);
+            console.log('String Length:', data.length);
+            console.log('Type:', typeof data.original);
+            
+            console.group('📝 String Methods Demonstrated:');
+            console.log('toUpperCase():', data.original, '->', data.uppercase);
+            console.log('toLowerCase():', data.original, '->', data.lowercase);
+            console.log('charAt(0):', data.firstChar);
+            console.log('charAt(length-1):', data.lastChar);
+            console.log('includes(" "):', data.containsSpaces);
+            console.groupEnd();
+            
+            console.group('🧮 Advanced Analysis:');
+            console.log('Word Count:', data.wordCount);
+            console.log('Character Frequency:', data.characterFrequency);
+            console.log('Is Palindrome:', data.palindromeCheck);
+            console.log('Reversed String:', data.reversed);
+            console.groupEnd();
+            
+            console.groupEnd();
+        }
+
+        // Initialize application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 JavaScript String Analyzer loaded successfully');
+            console.log('💡 Click "Analyze String" to start string analysis');
+            
+            // Demonstrate console.log vs document.write differences
+            console.group('📚 Educational Note: Modern vs Legacy Approaches');
+            console.log('✅ Modern Approach: DOM manipulation with createElement, innerHTML, etc.');
+            console.log('❌ Legacy Approach: document.write() - not recommended for modern web development');
+            console.log('📖 Template Literals: Use backticks (`) for string interpolation: `Hello ${name}`');
+            console.log('🎯 This application demonstrates modern JavaScript best practices');
+            console.groupEnd();
+        });
+
+        // Add keyboard shortcuts for better UX
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.key === 'Enter') {
+                performStringAnalysis();
+            } else if (event.key === 'Escape') {
+                clearResults();
+            }
+        });
     </script>
 </body>
 </html>
