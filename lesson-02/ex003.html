@@ -3,33 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My First Program</title>
+    <meta name="description" content="Interactive JavaScript calculator application demonstrating type conversion and input validation">
+    <title>JavaScript Calculator Application</title>
     <style>
+        /* Base styling for demonstration purposes */
         body {
-            background-color: burlywood;
-            color: #fff; /* Comentário em CSS */
-            font: normal 20pt Arial, sans-serif;
+            background: linear-gradient(135deg, #d2b48c, #c19a6b);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1.25rem;
+            margin: 0;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
         header h1 {
-            color: yellow;
+            color: #ffff00;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        main {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .calculator-section {
+            margin: 2rem 0;
+        }
+
+        .start-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 1rem;
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-display {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #ffff00;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Hello, world!</h1> <!-- Isso é um comentário -->
+        <h1>JavaScript Calculator</h1>
     </header>
+    
     <main>
-        <p>I've broken the curse!</p>
+        <p>This application demonstrates JavaScript fundamentals: type conversion, user input handling, and mathematical operations.</p>
+        
+        <section class="calculator-section">
+            <button class="start-button" onclick="performCalculation()">
+                Start Calculator
+            </button>
+            
+            <div id="result-container" class="result-display" style="display: none;">
+                <!-- Calculation results will be displayed here -->
+            </div>
+        </section>
     </main>
+
     <script>
-        var n1 = Number(window.prompt('Digite um número: ')) // String
-        var n2 = Number(window.prompt('Digite outro número: ')) // String
-        var s = n1 + n2
-        window.alert(´A soma entre ${n1} e ${n2} é igual ´ + s) // Concatenação
-        // (number + number) para adição
-        // (string + string) para concatenação
+        /**
+         * Main calculation function that handles user input and performs arithmetic operations
+         * Demonstrates JavaScript type conversion, input validation, and string interpolation
+         */
+        function performCalculation() {
+            try {
+                // Get first number from user with input validation
+                const firstNumber = getValidNumber('Please enter the first number:');
+                if (firstNumber === null) return; // User cancelled
+                
+                // Get second number from user with input validation  
+                const secondNumber = getValidNumber('Please enter the second number:');
+                if (secondNumber === null) return; // User cancelled
+                
+                // Perform arithmetic operation (addition)
+                const sum = calculateSum(firstNumber, secondNumber);
+                
+                // Display results using template literals and type information
+                displayCalculationResult(firstNumber, secondNumber, sum);
+                
+                // Log operation details to console for debugging
+                logCalculationDetails(firstNumber, secondNumber, sum);
+                
+            } catch (error) {
+                console.error('Error during calculation:', error);
+                displayErrorMessage('An error occurred during the calculation. Please try again.');
+            }
+        }
+
+        /**
+         * Prompts user for a number and validates the input
+         * @param {string} promptMessage - The message to display to the user
+         * @returns {number|null} - The validated number or null if cancelled
+         */
+        function getValidNumber(promptMessage) {
+            let userInput;
+            let attempts = 0;
+            const maxAttempts = 3;
+            
+            do {
+                // Get user input as string
+                userInput = window.prompt(promptMessage);
+                
+                // Check if user cancelled the prompt
+                if (userInput === null) {
+                    return null;
+                }
+                
+                // Attempt to convert string to number
+                const convertedNumber = Number(userInput);
+                
+                // Validate the conversion result
+                if (!isNaN(convertedNumber) && isFinite(convertedNumber)) {
+                    return convertedNumber;
+                }
+                
+                // Invalid input - show error and retry
+                attempts++;
+                if (attempts < maxAttempts) {
+                    window.alert(`Invalid input: "${userInput}" is not a valid number. Please enter a numeric value.`);
+                    promptMessage = 'Please enter a valid number:';
+                } else {
+                    window.alert('Maximum attempts reached. Operation cancelled.');
+                    return null;
+                }
+                
+            } while (attempts < maxAttempts);
+            
+            return null;
+        }
+
+        /**
+         * Performs addition operation on two numbers
+         * @param {number} num1 - First number
+         * @param {number} num2 - Second number  
+         * @returns {number} - The sum of the two numbers
+         */
+        function calculateSum(num1, num2) {
+            // Note: When both operands are numbers, + performs mathematical addition
+            // When either operand is a string, + performs string concatenation
+            return num1 + num2;
+        }
+
+        /**
+         * Displays the calculation result in a formatted manner
+         * @param {number} firstNum - First number used in calculation
+         * @param {number} secondNum - Second number used in calculation
+         * @param {number} result - The calculation result
+         */
+        function displayCalculationResult(firstNum, secondNum, result) {
+            const resultContainer = document.getElementById('result-container');
+            
+            // Using template literals (ES6) for string interpolation
+            const resultHTML = `
+                <h3>Calculation Result</h3>
+                <p><strong>Operation:</strong> ${firstNum} + ${secondNum}</p>
+                <p><strong>Result:</strong> ${result}</p>
+                <p><strong>Data Types:</strong></p>
+                <ul style="text-align: left; display: inline-block;">
+                    <li>First number: ${firstNum} (${typeof firstNum})</li>
+                    <li>Second number: ${secondNum} (${typeof secondNum})</li>
+                    <li>Sum: ${result} (${typeof result})</li>
+                </ul>
+                <p><em>Note: Number + Number = Mathematical Addition</em></p>
+            `;
+            
+            resultContainer.innerHTML = resultHTML;
+            resultContainer.style.display = 'block';
+            
+            // Also show alert for immediate feedback
+            window.alert(`The sum of ${firstNum} and ${secondNum} is ${result}`);
+        }
+
+        /**
+         * Displays error message to the user
+         * @param {string} message - Error message to display
+         */
+        function displayErrorMessage(message) {
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.innerHTML = `<p style="color: #ff6b6b;"><strong>Error:</strong> ${message}</p>`;
+            resultContainer.style.display = 'block';
+        }
+
+        /**
+         * Logs detailed calculation information to console for debugging
+         * @param {number} num1 - First number
+         * @param {number} num2 - Second number
+         * @param {number} sum - Calculation result
+         */
+        function logCalculationDetails(num1, num2, sum) {
+            console.group('🧮 Calculation Details');
+            console.log('Input 1:', num1, `(Type: ${typeof num1})`);
+            console.log('Input 2:', num2, `(Type: ${typeof num2})`);
+            console.log('Operation: Addition (+)');
+            console.log('Result:', sum, `(Type: ${typeof sum})`);
+            console.log('Type Conversion Demo:');
+            console.log(`  String + String: "${num1}" + "${num2}" = "${num1}" + "${num2}" = "${String(num1) + String(num2)}"`);
+            console.log(`  Number + Number: ${num1} + ${num2} = ${sum}`);
+            console.groupEnd();
+        }
+
+        /**
+         * Demonstrates different type conversion scenarios
+         * Educational function to show JavaScript type coercion
+         */
+        function demonstrateTypeConversion() {
+            console.group('📚 JavaScript Type Conversion Examples');
+            
+            // String to Number conversion
+            console.log('String to Number Conversion:');
+            console.log('Number("123"):', Number("123"), typeof Number("123"));
+            console.log('Number("123.45"):', Number("123.45"), typeof Number("123.45"));
+            console.log('Number("abc"):', Number("abc"), typeof Number("abc"));
+            
+            // Addition vs Concatenation
+            console.log('\nAddition vs Concatenation:');
+            console.log('5 + 3 =', 5 + 3, '(number + number = addition)');
+            console.log('"5" + "3" =', "5" + "3", '(string + string = concatenation)');
+            console.log('5 + "3" =', 5 + "3", '(number + string = concatenation)');
+            console.log('"5" + 3 =', "5" + 3, '(string + number = concatenation)');
+            
+            console.groupEnd();
+        }
+
+        // Initialize application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 JavaScript Calculator Application loaded');
+            
+            // Run type conversion demonstration for educational purposes
+            demonstrateTypeConversion();
+            
+            console.log('💡 Click "Start Calculator" to begin interactive calculation');
+        });
+
+        // Optional: Handle keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            // Start calculation with Enter key
+            if (event.key === 'Enter' && event.ctrlKey) {
+                performCalculation();
+            }
+        });
     </script>
 </body>
 </html>
- 
