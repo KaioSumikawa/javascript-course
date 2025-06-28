@@ -3,16 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Primeiros passos com DOM</title>
+    <meta name="description" content="Interactive DOM manipulation learning application">
+    <title>DOM Manipulation Learning App</title>
     <style>
         body {
-            background: rgb(68, 125, 199);
+            background: linear-gradient(135deg, #447dc7, #5a8fd4);
             color: white;
-            font: normal 18pt Arial;
+            font-family: Arial, sans-serif;
+            font-size: 18pt;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .demo-section {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #fff;
+        }
+
+        .interactive-element {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .output-display {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #28a745;
+        }
+
+        .element-info {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-    
+    <div class="container">
+        <h1>DOM Manipulation Learning Center</h1>
+        
+        <div class="demo-section">
+            <h2>Interactive DOM Elements</h2>
+            <p id="result-paragraph">Here will be the results of DOM manipulation</p>
+            <p class="learning-text">Learning to use <strong>DOM</strong> in JavaScript with practical examples.</p>
+            
+            <div id="interactive-message" class="interactive-element">
+                Click me to see DOM manipulation in action!
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>DOM Selection Methods</h2>
+            <div class="control-buttons">
+                <button class="btn btn-primary" onclick="demonstrateGetElementById()">getElementById</button>
+                <button class="btn btn-success" onclick="demonstrateGetElementsByTagName()">getElementsByTagName</button>
+                <button class="btn btn-warning" onclick="demonstrateQuerySelector()">querySelector</button>
+                <button class="btn btn-danger" onclick="demonstrateQuerySelectorAll()">querySelectorAll</button>
+            </div>
+            
+            <div id="selection-output" class="output-display" style="display: none;">
+                <!-- Selection results will be displayed here -->
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Style Manipulation</h2>
+            <div class="control-buttons">
+                <button class="btn btn-primary" onclick="changeBackgroundColor()">Change Background</button>
+                <button class="btn btn-success" onclick="changeTextContent()">Change Text</button>
+                <button class="btn btn-warning" onclick="addCSSClass()">Add CSS Class</button>
+                <button class="btn btn-danger" onclick="resetStyles()">Reset Styles</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Element Information</h2>
+            <div id="element-info-display" class="element-info">
+                Click any button above to see element information here.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables to store DOM references
+        let bodyElement = document.body;
+        let paragraphElements = document.getElementsByTagName('p');
+        let interactiveMessage = document.getElementById('interactive-message');
+        let selectionOutput = document.getElementById('selection-output');
+        let elementInfoDisplay = document.getElementById('element-info-display');
+        let resultParagraph = document.getElementById('result-paragraph');
+
+        // Initialize DOM manipulation when page loads
+        function initializeDOMManipulation() {
+            console.log('DOM Manipulation App Initialized');
+            
+            // Set initial styles using different DOM methods
+            let messageElement = document.querySelector('div#interactive-message');
+            messageElement.style.backgroundColor = '#007bff';
+            messageElement.style.color = 'white';
+            
+            // Add click event listener to interactive element
+            messageElement.addEventListener('click', handleInteractiveClick);
+            
+            // Log initial DOM structure information
+            logDOMStructure();
+        }
+
+        // Demonstrate getElementById method
+        function demonstrateGetElementById() {
+            let targetElement = document.getElementById('interactive-message');
+            
+            // Modify element properties
+            targetElement.style.backgroundColor = '#28a745';
+            targetElement.innerHTML = 'Selected with getElementById()';
+            
+            // Display information about the selection
+            displaySelectionInfo('getElementById', 'Selected single element by ID', targetElement);
+            
+            // Log to console for learning purposes
+            console.log('getElementById demonstration:', targetElement);
+        }
+
+        // Demonstrate getElementsByTagName method
+        function demonstrateGetElementsByTagName() {
+            let paragraphs = document.getElementsByTagName('p');
+            
+            // Modify all paragraph elements
+            for (let i = 0; i < paragraphs.length; i++) {
+                paragraphs[i].style.backgroundColor = 'rgba(255, 193, 7, 0.3)';
+                paragraphs[i].style.padding = '10px';
+                paragraphs[i].style.borderRadius = '5px';
+            }
+            
+            // Update interactive message
+            interactiveMessage.style.backgroundColor = '#ffc107';
+            interactiveMessage.style.color = 'black';
+            interactiveMessage.innerHTML = `Found ${paragraphs.length} paragraph elements`;
+            
+            // Display information
+            displaySelectionInfo('getElementsByTagName', `Selected ${paragraphs.length} paragraph elements`, paragraphs);
+            
+            console.log('getElementsByTagName demonstration:', paragraphs);
+        }
+
+        // Demonstrate querySelector method
+        function demonstrateQuerySelector() {
+            let selectedElement = document.querySelector('div#interactive-message');
+            
+            // Apply styles using querySelector
+            selectedElement.style.backgroundColor = '#17a2b8';
+            selectedElement.style.transform = 'scale(1.05)';
+            selectedElement.innerHTML = 'Selected with querySelector()';
+            
+            // Display information
+            displaySelectionInfo('querySelector', 'Selected first matching element with CSS selector', selectedElement);
+            
+            console.log('querySelector demonstration:', selectedElement);
+        }
+
+        // Demonstrate querySelectorAll method
+        function demonstrateQuerySelectorAll() {
+            let allElements = document.querySelectorAll('p, div');
+            
+            // Apply styles to all selected elements
+            allElements.forEach((element, index) => {
+                element.style.border = '2px solid #dc3545';
+                element.style.margin = '5px';
+                
+                // Add index information
+                if (element.tagName === 'DIV') {
+                    element.innerHTML = `Element ${index + 1}: ${element.tagName} selected with querySelectorAll()`;
+                }
+            });
+            
+            // Display information
+            displaySelectionInfo('querySelectorAll', `Selected ${allElements.length} elements (p and div tags)`, allElements);
+            
+            console.log('querySelectorAll demonstration:', allElements);
+        }
+
+        // Change background color dynamically
+        function changeBackgroundColor() {
+            let colors = ['#e74c3c', '#9b59b6', '#3498db', '#1abc9c', '#f39c12'];
+            let randomColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            interactiveMessage.style.backgroundColor = randomColor;
+            interactiveMessage.innerHTML = `Background changed to: ${randomColor}`;
+            
+            // Update element info
+            updateElementInfo(interactiveMessage, 'Background color changed');
+            
+            console.log('Background color changed to:', randomColor);
+        }
+
+        // Change text content dynamically
+        function changeTextContent() {
+            let messages = [
+                'Text content updated!',
+                'DOM manipulation in action!',
+                'JavaScript is powerful!',
+                'Learning DOM methods!',
+                'Interactive web development!'
+            ];
+            
+            let randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            
+            // Using different text manipulation methods
+            interactiveMessage.textContent = randomMessage;
+            resultParagraph.innerHTML = `<strong>Result:</strong> Text changed using textContent property`;
+            
+            updateElementInfo(interactiveMessage, 'Text content modified');
+            
+            console.log('Text content changed to:', randomMessage);
+        }
+
+        // Add CSS class dynamically
+        function addCSSClass() {
+            // Create and add a new CSS class
+            let styleSheet = document.createElement('style');
+            styleSheet.textContent = `
+                .dynamic-class {
+                    animation: pulse 2s infinite;
+                    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+                }
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(styleSheet);
+            
+            // Add class to element
+            interactiveMessage.classList.add('dynamic-class');
+            interactiveMessage.innerHTML = 'CSS class added with animation!';
+            
+            updateElementInfo(interactiveMessage, 'CSS class added');
+            
+            console.log('CSS class added to element');
+        }
+
+        // Reset all styles
+        function resetStyles() {
+            let allElements = document.querySelectorAll('p, div#interactive-message');
+            
+            allElements.forEach(element => {
+                element.style.cssText = '';
+                element.classList.remove('dynamic-class');
+                
+                if (element.id === 'interactive-message') {
+                    element.style.backgroundColor = '#007bff';
+                    element.style.color = 'white';
+                    element.innerHTML = 'Styles reset - Click me again!';
+                }
+            });
+            
+            resultParagraph.innerHTML = 'Here will be the results of DOM manipulation';
+            updateElementInfo(interactiveMessage, 'All styles reset');
+            
+            console.log('All styles reset to default');
+        }
+
+        // Handle interactive element click
+        function handleInteractiveClick() {
+            let currentBackground = interactiveMessage.style.backgroundColor;
+            let newBackground = currentBackground === 'rgb(0, 123, 255)' ? '#28a745' : '#007bff';
+            
+            interactiveMessage.style.backgroundColor = newBackground;
+            interactiveMessage.innerHTML = 'Clicked! Background toggled';
+            
+            updateElementInfo(interactiveMessage, 'Element clicked');
+            
+            console.log('Interactive element clicked');
+        }
+
+        // Display selection method information
+        function displaySelectionInfo(method, description, elements) {
+            selectionOutput.style.display = 'block';
+            
+            let elementCount = elements.length || 1;
+            let elementType = elements.tagName || 'Multiple elements';
+            
+            selectionOutput.innerHTML = `
+                <strong>Method:</strong> ${method}<br>
+                <strong>Description:</strong> ${description}<br>
+                <strong>Elements found:</strong> ${elementCount}<br>
+                <strong>Element type:</strong> ${elementType}
+            `;
+        }
+
+        // Update element information display
+        function updateElementInfo(element, action) {
+            elementInfoDisplay.innerHTML = `
+                <strong>Element:</strong> ${element.tagName}<br>
+                <strong>ID:</strong> ${element.id || 'None'}<br>
+                <strong>Classes:</strong> ${element.className || 'None'}<br>
+                <strong>Action:</strong> ${action}<br>
+                <strong>Current text:</strong> ${element.textContent}<br>
+                <strong>Background color:</strong> ${element.style.backgroundColor || 'Default'}
+            `;
+        }
+
+        // Log DOM structure for learning purposes
+        function logDOMStructure() {
+            console.group('DOM Structure Analysis');
+            console.log('Body element:', bodyElement);
+            console.log('Paragraph elements:', paragraphElements);
+            console.log('Interactive message element:', interactiveMessage);
+            console.log('Total paragraphs found:', paragraphElements.length);
+            
+            console.group('Element Properties');
+            console.log('Body background:', bodyElement.style.background);
+            console.log('Interactive message ID:', interactiveMessage.id);
+            console.log('Interactive message content:', interactiveMessage.textContent);
+            console.groupEnd();
+            
+            console.groupEnd();
+        }
+
+        // Advanced DOM manipulation examples
+        function createNewElement() {
+            let newDiv = document.createElement('div');
+            newDiv.textContent = 'Dynamically created element';
+            newDiv.style.backgroundColor = '#6c757d';
+            newDiv.style.color = 'white';
+            newDiv.style.padding = '10px';
+            newDiv.style.margin = '10px 0';
+            newDiv.style.borderRadius = '5px';
+            
+            document.querySelector('.container').appendChild(newDiv);
+            
+            console.log('New element created and added to DOM');
+        }
+
+        // Traverse DOM tree
+        function traverseDOM() {
+            let container = document.querySelector('.container');
+            
+            console.group('DOM Traversal');
+            console.log('Container children:', container.children);
+            console.log('First child:', container.firstElementChild);
+            console.log('Last child:', container.lastElementChild);
+            console.log('Parent element:', container.parentElement);
+            console.groupEnd();
+        }
+
+        // Event handling examples
+        function setupEventHandlers() {
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    demonstrateQuerySelector();
+                }
+            });
+            
+            console.log('Event handlers set up');
+        }
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDOMManipulation();
+            setupEventHandlers();
+            
+            console.log('DOM Manipulation Learning App fully loaded');
+        });
+
+        // Additional utility functions for advanced DOM manipulation
+        function getElementProperties(element) {
+            return {
+                tagName: element.tagName,
+                id: element.id,
+                className: element.className,
+                textContent: element.textContent,
+                innerHTML: element.innerHTML,
+                style: element.style.cssText,
+                attributes: Array.from(element.attributes).map(attr => `${attr.name}="${attr.value}"`),
+                childElementCount: element.childElementCount
+            };
+        }
+
+        function logElementDetails(element) {
+            let properties = getElementProperties(element);
+            console.table(properties);
+        }
+
+        // Performance monitoring for DOM operations
+        function measureDOMPerformance(operation, callback) {
+            let startTime = performance.now();
+            callback();
+            let endTime = performance.now();
+            
+            console.log(`${operation} took ${endTime - startTime} milliseconds`);
+        }
+    </script>
 </body>
 </html>
