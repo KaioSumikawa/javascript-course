@@ -52,3 +52,4 @@ function loadTime() {
     }
 }
 
+script test
