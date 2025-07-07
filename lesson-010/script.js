@@ -47,3 +47,5 @@ function verificar() {
         res.appendChild(img)
     }
 }
+
+test 
